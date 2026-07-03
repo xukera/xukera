@@ -1,0 +1,12 @@
+/vendor/
+/storage/*
+!/storage/.gitkeep
+
+.env
+.env.local
+
+.idea/
+.vscode/
+
+.DS_Store
+Thumbs.db

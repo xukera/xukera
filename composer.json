@@ -1,0 +1,17 @@
+{
+    "name": "xukera/framework",
+    "description": "XUKERA - Knowledge Framework",
+    "type": "project",
+
+    "license": "MIT",
+
+    "require": {
+        "php": "^8.2"
+    },
+
+    "autoload": {
+        "psr-4": {
+            "Xukera\\": "src/"
+        }
+    }
+}
