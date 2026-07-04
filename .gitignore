@@ -1,12 +1,13 @@
-/vendor/
-/storage/*
-!/storage/.gitkeep
-
-.env
-.env.local
-
-.idea/
-.vscode/
+*.bak
 
 .DS_Store
 Thumbs.db
+
+node_modules/
+
+vendor/
+
+*.log
+
+.idea/
+.vscode/

@@ -1,0 +1,10 @@
+ha_soggiornato_a
+ha_costruito
+ha_visitato
+cita
+pubblicato_da
+si_trova_in
+confina_con
+documentato_in
+custodito_da
+appartenuto_a
