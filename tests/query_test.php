@@ -24,13 +24,22 @@ $persona = new Node('dario', 'persona', 'Dario', [
 $graph->addNode($villa);
 $graph->addNode($persona);
 
+$relation = new \Xukera\Core\Relation(
+    'rel_001',
+    $persona,
+    'visita',
+    $villa
+);
+
+$graph->addRelation($relation);
+
 $results = Query::create($graph)
-    ->whereType('luogo')
-    ->whereMetadata('comune', 'Mira')
+    ->whereType('persona')
+    ->outgoing('visita')
     ->get();
 
-echo "Risultati trovati: " . count($results) . PHP_EOL;
+echo "Nodi raggiunti: " . count($results) . PHP_EOL;
 
 foreach ($results as $node) {
-    echo "- " . $node->getId() . " / " . $node->getType() . " / " . $node->getTitle() . PHP_EOL;
+    echo "- " . $node->getTitle() . PHP_EOL;
 }

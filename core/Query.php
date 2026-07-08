@@ -100,4 +100,91 @@ final class Query
     {
         return $this->result[0] ?? null;
     }
+
+/**
+ * Naviga verso i nodi target delle relazioni uscenti
+ * dai nodi attualmente selezionati.
+ *
+ * @return self
+ */
+public function outgoing(?string $type = null): self
+{
+    $currentIds = array_map(
+        fn (Node $node): string => $node->getId(),
+        $this->result
+    );
+
+    $results = [];
+
+    foreach ($this->graph->relations() as $relation) {
+        if (!in_array($relation->getSource()->getId(), $currentIds, true)) {
+            continue;
+        }
+
+        if ($type !== null && $relation->getType() !== $type) {
+            continue;
+        }
+
+        $target = $relation->getTarget();
+        $results[$target->getId()] = $target;
+    }
+
+    $this->result = array_values($results);
+
+    return $this;
+}
+
+/**
+ * Naviga verso i nodi source delle relazioni entranti
+ * nei nodi attualmente selezionati.
+ *
+ * @return self
+ */
+public function incoming(?string $type = null): self
+{
+    $currentIds = array_map(
+        fn (Node $node): string => $node->getId(),
+        $this->result
+    );
+
+    $results = [];
+
+    foreach ($this->graph->relations() as $relation) {
+        if (!in_array($relation->getTarget()->getId(), $currentIds, true)) {
+            continue;
+        }
+
+        if ($type !== null && $relation->getType() !== $type) {
+            continue;
+        }
+
+        $source = $relation->getSource();
+        $results[$source->getId()] = $source;
+    }
+
+    $this->result = array_values($results);
+
+    return $this;
+}
+
+/**
+ * Restituisce i nodi vicini dei nodi attualmente selezionati.
+ *
+ * @return self
+ */
+public function neighbors(): self
+{
+    $results = [];
+
+    foreach ($this->result as $node) {
+        foreach ($this->graph->neighbors($node) as $neighbor) {
+            $results[$neighbor->getId()] = $neighbor;
+        }
+    }
+
+    $this->result = array_values($results);
+
+    return $this;
+}
+
 }
