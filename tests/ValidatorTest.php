@@ -7,7 +7,7 @@ namespace Xukera\Tests;
 use PHPUnit\Framework\TestCase;
 use Xukera\Core\Graph;
 use Xukera\Core\Node;
-use Xukera\Core\Validator;
+use Xukera\Validation\Validator;
 
 final class ValidatorTest extends TestCase
 {

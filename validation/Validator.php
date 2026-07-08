@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Xukera\Core;
+namespace Xukera\Validation;
+
+use Xukera\Core\Graph;
 
 /**
  * Valida la coerenza di un Graph.
