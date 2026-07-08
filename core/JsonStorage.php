@@ -25,7 +25,16 @@ final class JsonStorage implements StorageInterface
                 ],
                 $graph->nodes()
             ),
-            'relations' => [],
+            'relations' => array_map(
+                fn (Relation $relation): array => [
+                    'id' => $relation->getId(),
+                    'source' => $relation->getSource()->getId(),
+                    'type' => $relation->getType(),
+                    'target' => $relation->getTarget()->getId(),
+                    'metadata' => $relation->getMetadata(),
+                ],
+                $graph->relations()
+            ),
         ];
 
         file_put_contents(
@@ -51,6 +60,23 @@ final class JsonStorage implements StorageInterface
                 $nodeData['type'],
                 $nodeData['title'],
                 $nodeData['metadata'] ?? []
+            ));
+        }
+
+        foreach ($data['relations'] ?? [] as $relationData) {
+            $source = $graph->getNode($relationData['source']);
+            $target = $graph->getNode($relationData['target']);
+
+            if ($source === null || $target === null) {
+                continue;
+            }
+
+            $graph->addRelation(new Relation(
+                $relationData['id'],
+                $source,
+                $relationData['type'],
+                $target,
+                $relationData['metadata'] ?? []
             ));
         }
 
