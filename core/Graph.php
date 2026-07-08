@@ -52,6 +52,17 @@ final class Graph
 
     public function addRelation(Relation $relation): void
     {
+        $sourceId = $relation->getSource()->getId();
+        $targetId = $relation->getTarget()->getId();
+
+        if (!$this->hasNode($sourceId)) {
+            throw new \InvalidArgumentException("Source node '{$sourceId}' is not in the graph.");
+        }
+
+        if (!$this->hasNode($targetId)) {
+            throw new \InvalidArgumentException("Target node '{$targetId}' is not in the graph.");
+        }
+
         $this->relations[] = $relation;
     }
 
@@ -142,10 +153,15 @@ final class Graph
         $query = mb_strtolower($query);
 
         foreach ($this->nodes as $node) {
+            $metadata = array_map(
+                static fn ($value): string => is_scalar($value) ? (string) $value : json_encode($value),
+                $node->getMetadata()
+            );
+
             $haystack = mb_strtolower(
                 $node->getTitle() . ' ' .
                 $node->getType() . ' ' .
-                implode(' ', $node->getMetadata())
+                implode(' ', $metadata)
             );
 
             if (str_contains($haystack, $query)) {
