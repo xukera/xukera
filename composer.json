@@ -2,7 +2,7 @@
     "name": "xukera/core",
     "description": "Universal Knowledge Framework for PHP",
     "type": "library",
-    "license": "MIT",
+    "license": "proprietary",
     "keywords": [
         "knowledge",
         "graph",
