@@ -6,7 +6,7 @@ namespace Xukera\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Xukera\Core\Graph;
-use Xukera\Core\JsonStorage;
+use Xukera\Storage\JsonStorage;
 use Xukera\Core\Node;
 use Xukera\Core\Relation;
 

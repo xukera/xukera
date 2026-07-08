@@ -6,7 +6,7 @@ namespace Xukera\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Xukera\Core\Graph;
-use Xukera\Core\MemoryStorage;
+use Xukera\Storage\MemoryStorage;
 
 final class MemoryStorageTest extends TestCase
 {

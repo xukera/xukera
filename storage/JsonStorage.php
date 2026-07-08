@@ -2,9 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Xukera\Core;
+namespace Xukera\Storage;
 
 use Xukera\Contracts\StorageInterface;
+use Xukera\Core\Graph;
+use Xukera\Core\Node;
+use Xukera\Core\Relation;
+use Xukera\Serialization\JsonSerializer;
 
 final class JsonStorage implements StorageInterface
 {

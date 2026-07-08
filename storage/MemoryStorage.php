@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Xukera\Core;
+namespace Xukera\Storage;
 
 use Xukera\Contracts\StorageInterface;
+use Xukera\Core\Graph;
 
 final class MemoryStorage implements StorageInterface
 {

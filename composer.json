@@ -21,7 +21,10 @@
     "autoload": {
         "psr-4": {
             "Xukera\\Core\\": "core/",
-            "Xukera\\Contracts\\": "contracts/"
+            "Xukera\\Contracts\\": "contracts/",
+            "Xukera\\Storage\\": "storage/",
+            "Xukera\\Serialization\\": "serialization/",
+            "Xukera\\Validation\\": "validation/"
         }
     },
     "autoload-dev": {
