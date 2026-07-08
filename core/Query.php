@@ -67,7 +67,20 @@ final class Query
 
         return $this;
     }
+    public function whereMetadata(string $key, mixed $value): self
+    {
+        $this->result = array_values(array_filter(
+        $this->result,
+        function (Node $node) use ($key, $value): bool {
+            $metadata = $node->getMetadata();
 
+            return array_key_exists($key, $metadata)
+                && $metadata[$key] === $value;
+        }
+        ));
+
+        return $this;
+    }
     public function whereProperty(string $key, mixed $value): self
     {
         $this->result = array_values(array_filter(
