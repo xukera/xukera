@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xukera — Connect Knowledge</title>
+    <meta name="description" content="Xukera is a PHP framework for modeling, connecting and exploring knowledge through nodes, relations and graphs.">
+
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+
+<body>
+    <canvas id="graph-bg"></canvas>
+
+    <div class="intro" id="intro">
+        <div class="intro-text">
+            Everything starts with a connection.
+        </div>
+
+        <button class="intro-button" onclick="enterSite()">
+            Enter Xukera
+        </button>
+    </div>
+
+    <section class="hero">
+        <div class="hero-inner">
+            <img src="/assets/images/xukera-logo.png" alt="Xukera logo" class="logo">
+
+            <div class="pretitle">
+                Knowledge Framework
+            </div>
+
+            <h1 class="tagline">
+                Connect <span>Knowledge.</span>
+            </h1>
+
+            <p class="subtitle">
+                A cinematic PHP framework for modeling, connecting and exploring knowledge through nodes, relations and graphs.
+            </p>
+
+            <div class="actions">
+                <a href="#framework" class="button primary">Explore Framework</a>
+                <a href="https://github.com/xukera/xukera" class="button">GitHub</a>
+            </div>
+        </div>
+
+        <div class="scroll-cue">
+            Scroll to enter
+        </div>
+    </section>
+
+    <main>
+        <section id="framework">
+            <div class="eyebrow">The vision</div>
+
+            <h2>
+                Knowledge is not stored. Knowledge is connected.
+            </h2>
+
+            <p class="lead">
+                Xukera is not a CMS, not a WordPress plugin, and not a vertical application.
+                It is a universal knowledge framework designed to represent entities, connections, metadata and meaning.
+            </p>
+
+            <div class="quote">
+                Knowledge becomes powerful when relationships emerge.
+            </div>
+        </section>
+
+        <section>
+            <div class="eyebrow">Architecture</div>
+
+            <h2>
+                Small core. Clear modules. Infinite applications.
+            </h2>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>Core</h3>
+                    <p>Node, Relation, Graph and Query form the foundation of the knowledge model.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Storage</h3>
+                    <p>Save and load graphs through interchangeable storage adapters.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Serialization</h3>
+                    <p>Export knowledge into readable and portable formats such as JSON.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Validation</h3>
+                    <p>Check the integrity of graphs before storing or using them in applications.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Query Engine</h3>
+                    <p>Filter nodes, traverse relations and discover paths across the graph.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Applications</h3>
+                    <p>Build digital archives, research tools, knowledge bases and investigative systems.</p>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="eyebrow">Code</div>
+
+            <h2>
+                Readable by design.
+            </h2>
+
+            <div class="code-block">
+                <div class="code-header">xukera.php</div>
+
+                <pre><code>use Xukera\Core\Graph;
+use Xukera\Core\Node;
+use Xukera\Core\Query;
+
+$graph = new Graph();
+
+$graph->addNode(new Node(
+    'villa_widmann',
+    'place',
+    'Villa Widmann',
+    ['city' => 'Mira']
+));
+
+$results = Query::create($graph)
+    ->whereType('place')
+    ->whereMetadata('city', 'Mira')
+    ->get();</code></pre>
+            </div>
+        </section>
+
+        <section>
+            <div class="eyebrow">Roadmap</div>
+
+            <h2>
+                From foundation to knowledge engine.
+            </h2>
+
+            <div class="roadmap">
+                <div class="step"><span class="done">✓</span> Core</div>
+                <div class="step"><span class="done">✓</span> Query</div>
+                <div class="step"><span class="done">✓</span> Storage</div>
+                <div class="step"><span class="done">✓</span> Serialization</div>
+                <div class="step"><span class="done">✓</span> Validation</div>
+                <div class="step">□ HTTP API</div>
+                <div class="step">□ Plugin System</div>
+                <div class="step">□ Documentation</div>
+                <div class="step">□ Composer Package</div>
+                <div class="step">□ Version 1.0</div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Xukera — Connect Knowledge. Made in Italy.
+    </footer>
+    <script src="/assets/js/intro/IntroDirector.js"></script>
+    <script src="/assets/js/intro.js"></script>
+
+    <script src="/assets/js/graph/GraphNode.js"></script>
+    <script src="/assets/js/graph/Pulse.js"></script>
+    <script src="/assets/js/graph/GraphEngine.js"></script>
+
+    <script src="/assets/js/graph.js"></script>
+
+
+</body>
+</html>
