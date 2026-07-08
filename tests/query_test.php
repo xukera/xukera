@@ -2,14 +2,12 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../core/Node.php';
-require_once __DIR__ . '/../core/Relation.php';
-require_once __DIR__ . '/../core/Graph.php';
-require_once __DIR__ . '/../core/Query.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use Xukera\Core\Graph;
 use Xukera\Core\Node;
 use Xukera\Core\Query;
+use Xukera\Core\Relation;
 
 $graph = new Graph();
 

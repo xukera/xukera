@@ -1,0 +1,33 @@
+{
+    "name": "xukera/core",
+    "description": "Universal Knowledge Framework for PHP",
+    "type": "library",
+    "license": "MIT",
+    "keywords": [
+        "knowledge",
+        "graph",
+        "framework",
+        "semantic",
+        "knowledge-graph"
+    ],
+    "authors": [
+        {
+            "name": "Dario Corrò"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Xukera\\Core\\": "core/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Xukera\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
