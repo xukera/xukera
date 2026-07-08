@@ -187,4 +187,52 @@ public function neighbors(): self
     return $this;
 }
 
+/**
+ * Trova il percorso più breve tra due nodi.
+ *
+ * @return Node[]
+ */
+public function findPath(string $fromId, string $toId): array
+{
+    $start = $this->graph->getNode($fromId);
+    $target = $this->graph->getNode($toId);
+
+    if ($start === null || $target === null) {
+        return [];
+    }
+
+    $queue = [
+        [$start],
+    ];
+
+    $visited = [
+        $start->getId() => true,
+    ];
+
+    while ($queue !== []) {
+        $path = array_shift($queue);
+        $lastNode = $path[count($path) - 1];
+
+        if ($lastNode->getId() === $target->getId()) {
+            return $path;
+        }
+
+        foreach ($this->graph->neighbors($lastNode) as $neighbor) {
+            if (isset($visited[$neighbor->getId()])) {
+                continue;
+            }
+
+            $visited[$neighbor->getId()] = true;
+
+            $newPath = $path;
+            $newPath[] = $neighbor;
+
+            $queue[] = $newPath;
+        }
+    }
+
+    return [];
+}
+
+
 }

@@ -33,13 +33,11 @@ $relation = new \Xukera\Core\Relation(
 
 $graph->addRelation($relation);
 
-$results = Query::create($graph)
-    ->whereType('persona')
-    ->outgoing('visita')
-    ->get();
+$path = Query::create($graph)
+    ->findPath('dario', 'villa_widmann');
 
-echo "Nodi raggiunti: " . count($results) . PHP_EOL;
+echo "Percorso trovato: " . count($path) . " nodi" . PHP_EOL;
 
-foreach ($results as $node) {
+foreach ($path as $node) {
     echo "- " . $node->getTitle() . PHP_EOL;
 }
