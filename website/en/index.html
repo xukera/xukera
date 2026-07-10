@@ -2,6 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+<script>
+    if (
+        sessionStorage.getItem("xukeraOpeningSeen") !== "true" &&
+        !window.location.pathname.startsWith("/opening")
+    ) {
+        window.location.replace("/opening/");
+    }
+</script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Xukera — Connect Knowledge</title>
     <meta name="description" content="Xukera is a PHP framework for modeling, connecting and exploring knowledge through nodes, relations and graphs.">

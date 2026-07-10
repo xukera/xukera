@@ -607,16 +607,22 @@ function drawTransitionToHome(time) {
 
     ctx.restore();
 
-    if (
-        progress >= 1 &&
-        !transitionToHome.redirected
-    ) {
-        transitionToHome.redirected = true;
+if (
+    progress >= 1 &&
+    !transitionToHome.redirected
+) {
+    transitionToHome.redirected = true;
 
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 150);
-    }
+    sessionStorage.setItem(
+        "xukeraOpeningSeen",
+        "true"
+    );
+
+    setTimeout(() => {
+        window.location.replace("/");
+    }, 300);
+}
+
 }
 
 function draw() {
