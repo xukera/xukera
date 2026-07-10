@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Xukera Opening Engine</title>
+
+<style>
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+}
+
+canvas {
+    display: block;
+}
+</style>
+</head>
+
+<body>
+<canvas id="opening"></canvas>
+
+<script>
+const canvas = document.getElementById("opening");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+const nodes = [
+    { x: 0.50, y: 0.50, born: 0, energy: 0 },      // centro
+    { x: 0.34, y: 0.30, born: 1600, energy: 0 },   // alto sinistra
+    { x: 0.66, y: 0.30, born: 2300, energy: 0 },   // alto destra
+    { x: 0.34, y: 0.70, born: 3100, energy: 0 },   // basso sinistra
+    { x: 0.66, y: 0.70, born: 3900, energy: 0 }    // basso destra
+];
+
+/*
+ * Percorso dell'Explorer:
+ *
+ * centro → alto sinistra
+ * alto sinistra → centro
+ * centro → basso destra
+ * basso destra → centro
+ * centro → alto destra
+ * alto destra → centro
+ * centro → basso sinistra
+ */
+
+const networkAwakening = {
+    start: 14800,
+    duration: 3600
+};
+
+const finalReveal = {
+    start: 18400,
+    duration: 2600
+};
+
+const transitionToHome = {
+    start: 22200,
+    duration: 1800,
+    redirected: false
+};
+
+const explorerPath = [
+    { from: 0, to: 1 },
+    { from: 1, to: 0 },
+    { from: 0, to: 4 },
+    { from: 4, to: 0 },
+    { from: 0, to: 2 },
+    { from: 2, to: 0 },
+    { from: 0, to: 3 }
+];
+
+const startTime = performance.now();
+
+const explorer = {
+    start: 5200,
+    segmentDuration: 1150,
+    pauseDuration: 180,
+    trail: []
+};
+
+function easeInOutCubic(t) {
+    return t < 0.5
+        ? 4 * t * t * t
+        : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function nodePosition(node, time) {
+    const driftX = Math.sin(time * 0.0007 + node.x * 20) * 2;
+    const driftY = Math.cos(time * 0.0008 + node.y * 20) * 2;
+
+    return {
+        x: node.x * canvas.width + driftX,
+        y: node.y * canvas.height + driftY
+    };
+}
+
+function getExplorerState(time) {
+    const age = time - explorer.start;
+
+    if (age < 0) {
+        return null;
+    }
+
+    const cycleDuration =
+        explorer.segmentDuration + explorer.pauseDuration;
+
+    const pathIndex =
+        Math.floor(age / cycleDuration);
+
+    if (pathIndex >= explorerPath.length) {
+        return {
+            finished: true,
+            segment: explorerPath[explorerPath.length - 1],
+            progress: 1
+        };
+    }
+
+    const localTime = age % cycleDuration;
+    const travelling =
+        localTime < explorer.segmentDuration;
+
+    const rawProgress = travelling
+        ? localTime / explorer.segmentDuration
+        : 1;
+
+    return {
+        finished: false,
+        segment: explorerPath[pathIndex],
+        pathIndex,
+        progress: easeInOutCubic(rawProgress)
+    };
+}
+
+function drawCompletedConnections(time) {
+    const state = getExplorerState(time);
+
+    if (!state) {
+        return;
+    }
+
+    const completedCount = state.finished
+        ? explorerPath.length
+        : state.pathIndex;
+
+    const renderedEdges = new Set();
+
+    for (let i = 0; i < completedCount; i++) {
+        const segment = explorerPath[i];
+
+        const key = [segment.from, segment.to]
+            .sort((a, b) => a - b)
+            .join("-");
+
+        if (renderedEdges.has(key)) {
+            continue;
+        }
+
+        renderedEdges.add(key);
+
+        const a = nodePosition(nodes[segment.from], time);
+        const b = nodePosition(nodes[segment.to], time);
+
+        ctx.save();
+const awakeningAge = time - networkAwakening.start;
+
+let pulse = 0;
+
+if (awakeningAge > 0) {
+    pulse = Math.sin(awakeningAge * 0.004) * 0.5 + 0.5;
+}
+
+ctx.strokeStyle = `rgba(34, 211, 238, ${0.42 + pulse * 0.34})`;
+ctx.lineWidth = 1.4 + pulse * 1.2;
+ctx.shadowColor = "rgba(34, 211, 238, 0.90)";
+ctx.shadowBlur = 8 + pulse * 20;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+
+        ctx.restore();
+    }
+}
+
+function drawCurrentConnection(time) {
+    const state = getExplorerState(time);
+
+    if (!state || state.finished) {
+        return;
+    }
+
+    const from = nodePosition(
+        nodes[state.segment.from],
+        time
+    );
+
+    const to = nodePosition(
+        nodes[state.segment.to],
+        time
+    );
+
+    const x =
+        from.x + (to.x - from.x) * state.progress;
+
+    const y =
+        from.y + (to.y - from.y) * state.progress;
+
+    ctx.save();
+    ctx.strokeStyle = "rgba(103, 232, 249, 0.82)";
+    ctx.lineWidth = 2.2;
+    ctx.shadowColor = "rgba(34, 211, 238, 0.9)";
+    ctx.shadowBlur = 15;
+
+    ctx.beginPath();
+    ctx.moveTo(from.x, from.y);
+    ctx.lineTo(x, y);
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+function updateExplorerTrail(x, y) {
+    explorer.trail.unshift({ x, y, life: 1 });
+
+    if (explorer.trail.length > 26) {
+        explorer.trail.pop();
+    }
+
+    for (const point of explorer.trail) {
+        point.life *= 0.90;
+    }
+}
+
+function drawExplorerTrail() {
+    for (let i = explorer.trail.length - 1; i >= 0; i--) {
+        const point = explorer.trail[i];
+        const ratio =
+            1 - i / explorer.trail.length;
+
+        ctx.save();
+        ctx.globalAlpha =
+            point.life * ratio * 0.55;
+
+        ctx.fillStyle =
+            "rgba(103, 232, 249, 1)";
+
+        ctx.shadowColor =
+            "rgba(34, 211, 238, 0.9)";
+
+        ctx.shadowBlur = 14;
+
+        ctx.beginPath();
+        ctx.arc(
+            point.x,
+            point.y,
+            0.8 + ratio * 2.2,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+function drawExplorer(time) {
+    const state = getExplorerState(time);
+
+    if (!state) {
+        return;
+    }
+
+    const segment = state.segment;
+
+    const a = nodePosition(
+        nodes[segment.from],
+        time
+    );
+
+    const b = nodePosition(
+        nodes[segment.to],
+        time
+    );
+
+    const x =
+        a.x + (b.x - a.x) * state.progress;
+
+    const y =
+        a.y + (b.y - a.y) * state.progress;
+
+    updateExplorerTrail(x, y);
+    drawExplorerTrail();
+
+    ctx.save();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.shadowColor =
+        "rgba(125, 211, 252, 1)";
+    ctx.shadowBlur = 26;
+
+    ctx.beginPath();
+    ctx.arc(x, y, 4.5, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    if (state.progress > 0.96) {
+        nodes[segment.to].energy = 1;
+    }
+}
+
+function drawNode(node, time) {
+    const age = time - node.born;
+
+    if (age < 0) {
+        return;
+    }
+
+    node.energy *= 0.965;
+
+const awakeningAge = time - networkAwakening.start;
+
+if (awakeningAge > 0) {
+    const networkPulse =
+        Math.sin(awakeningAge * 0.004) * 0.5 + 0.5;
+
+    node.energy = Math.max(
+        node.energy,
+        networkPulse * 0.85
+    );
+}
+
+    const alpha = Math.min(1, age / 1400);
+
+    const pulse =
+        Math.sin(time * 0.003 + node.x * 10) *
+        0.5 + 0.5;
+
+    const radius =
+        2.4 +
+        pulse * 1.2 +
+        node.energy * 3;
+
+    const glow =
+        16 +
+        pulse * 14 +
+        node.energy * 30;
+
+    const pos = nodePosition(node, time);
+
+    ctx.save();
+    ctx.globalAlpha = alpha;
+
+    ctx.shadowColor =
+        "rgba(34, 211, 238, 1)";
+
+    ctx.shadowBlur = glow;
+
+    ctx.fillStyle =
+        node.energy > 0.1
+            ? "rgba(224, 242, 254, 1)"
+            : "rgba(125, 211, 252, 1)";
+
+    ctx.beginPath();
+    ctx.arc(
+        pos.x,
+        pos.y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawXukeraTitle(ctx, centerX, centerY, fontSize, alpha) {
+    ctx.save();
+
+    ctx.globalAlpha = alpha;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
+    ctx.font = `700 ${fontSize}px Arial, Helvetica, sans-serif`;
+
+    const xLetter = "X";
+    const middleText = "UKER";
+
+    const xWidth = ctx.measureText(xLetter).width;
+    const middleWidth = ctx.measureText(middleText).width;
+
+    const gapAfterX = fontSize * 0.10;
+    const gapBeforeA = fontSize * 0.05;
+    const aWidth = fontSize * 0.68;
+
+    const totalWidth =
+        xWidth +
+        gapAfterX +
+        middleWidth +
+        gapBeforeA +
+        aWidth;
+
+    const startX = centerX - totalWidth / 2;
+
+    /* X azzurra */
+    ctx.fillStyle = "rgba(14, 165, 233, 1)";
+    ctx.shadowColor = "rgba(34, 211, 238, 0.85)";
+    ctx.shadowBlur = 24;
+
+    ctx.fillText(
+        xLetter,
+        startX,
+        centerY
+    );
+
+    /* UKER bianche */
+    const middleX = startX + xWidth + gapAfterX;
+
+    ctx.fillStyle = "rgba(241, 245, 249, 1)";
+    ctx.shadowColor = "rgba(34, 211, 238, 0.40)";
+    ctx.shadowBlur = 16;
+
+    ctx.fillText(
+        middleText,
+        middleX,
+        centerY
+    );
+
+    /* A finale */
+    const aLeft =
+        middleX +
+        middleWidth +
+        gapBeforeA;
+
+    const aRight = aLeft + aWidth;
+    const aCenterX = aLeft + aWidth / 2;
+
+    const topY = centerY - fontSize * 0.36;
+    const bottomY = centerY + fontSize * 0.30;
+    const topGap = fontSize * 0.055;
+
+    ctx.strokeStyle = "rgba(241, 245, 249, 1)";
+    ctx.lineWidth = Math.max(3.5, fontSize * 0.065);
+    ctx.lineCap = "butt";
+    ctx.lineJoin = "round";
+
+    ctx.shadowColor = "rgba(34, 211, 238, 0.35)";
+    ctx.shadowBlur = 14;
+
+    /* Asta sinistra */
+    ctx.beginPath();
+    ctx.moveTo(aLeft, bottomY);
+    ctx.lineTo(
+        aCenterX - topGap,
+        topY
+    );
+    ctx.stroke();
+
+    /* Asta destra */
+    ctx.beginPath();
+    ctx.moveTo(
+        aCenterX + topGap,
+        topY
+    );
+    ctx.lineTo(aRight, bottomY);
+    ctx.stroke();
+
+    /* Nodo della A */
+    const nodeX =
+        aCenterX + fontSize * 0.075;
+
+    const nodeY =
+        centerY + fontSize * 0.075;
+
+    const nodeRadius =
+        Math.max(4, fontSize * 0.055);
+
+    ctx.fillStyle = "rgba(14, 165, 233, 1)";
+    ctx.shadowColor = "rgba(34, 211, 238, 1)";
+    ctx.shadowBlur = 22;
+
+    ctx.beginPath();
+    ctx.arc(
+        nodeX,
+        nodeY,
+        nodeRadius,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    /* Riflesso del nodo */
+    ctx.fillStyle = "rgba(224, 242, 254, 0.95)";
+    ctx.shadowBlur = 6;
+
+    ctx.beginPath();
+    ctx.arc(
+        nodeX - nodeRadius * 0.20,
+        nodeY - nodeRadius * 0.20,
+        nodeRadius * 0.25,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+
+    ctx.restore();
+}
+
+function drawFinalReveal(time) {
+    const age = time - finalReveal.start;
+
+    if (age < 0) {
+        return;
+    }
+
+    const progress = Math.min(1, age / finalReveal.duration);
+    const eased = easeInOutCubic(progress);
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    ctx.save();
+
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    ctx.globalAlpha = eased;
+    ctx.shadowColor = "rgba(34, 211, 238, 0.95)";
+    ctx.shadowBlur = 26;
+
+const titleFontSize = Math.min(
+    canvas.width * 0.075,
+    88
+);
+
+ctx.globalAlpha = eased;
+ctx.textAlign = "center";
+ctx.textBaseline = "middle";
+ctx.font = `700 ${titleFontSize}px Arial, Helvetica, sans-serif`;
+
+ctx.fillStyle = "rgba(241, 245, 249, 1)";
+ctx.shadowColor = "rgba(34, 211, 238, 0.75)";
+ctx.shadowBlur = 24;
+
+ctx.fillText(
+    "XUKERA",
+    centerX,
+    centerY + 165
+);
+
+    const subtitleProgress = Math.max(
+        0,
+        Math.min(1, (age - 700) / 1500)
+    );
+
+    ctx.globalAlpha = subtitleProgress;
+    ctx.shadowBlur = 14;
+
+    ctx.fillStyle = "rgba(103, 232, 249, 0.95)";
+    ctx.font = `500 ${Math.min(canvas.width * 0.018, 22)}px Arial, sans-serif`;
+
+    ctx.fillText(
+        "CONNECT KNOWLEDGE.",
+        centerX,
+        centerY + 225
+    );
+
+    ctx.restore();
+}
+
+function drawTransitionToHome(time) {
+    const age = time - transitionToHome.start;
+
+    if (age < 0) {
+        return;
+    }
+
+    const progress = Math.min(
+        1,
+        age / transitionToHome.duration
+    );
+
+    const eased = easeInOutCubic(progress);
+
+    ctx.save();
+    ctx.globalAlpha = eased;
+    ctx.fillStyle = "#000";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.restore();
+
+    if (
+        progress >= 1 &&
+        !transitionToHome.redirected
+    ) {
+        transitionToHome.redirected = true;
+
+        setTimeout(() => {
+            window.location.href = "/";
+        }, 150);
+    }
+}
+
+function draw() {
+    const now = performance.now();
+    const time = now - startTime;
+
+    ctx.fillStyle = "#000";
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    drawCompletedConnections(time);
+    drawCurrentConnection(time);
+
+    for (const node of nodes) {
+        drawNode(node, time);
+    }
+
+    drawExplorer(time);
+    drawFinalReveal(time);
+drawTransitionToHome(time);
+    requestAnimationFrame(draw);
+}
+
+draw();
+</script>
+</body>
+</html>

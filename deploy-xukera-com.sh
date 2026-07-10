@@ -24,5 +24,6 @@ sudo mkdir -p "$DEST/assets/js/graph"
 sudo cp "$SRC/assets/js/graph/GraphNode.js" "$DEST/assets/js/graph/GraphNode.js"
 sudo cp "$SRC/assets/js/graph/Pulse.js" "$DEST/assets/js/graph/Pulse.js"
 sudo cp "$SRC/assets/js/graph/GraphEngine.js" "$DEST/assets/js/graph/GraphEngine.js"
-
+sudo mkdir -p "$DEST/opening"
+sudo cp -r "$SRC/opening/"* "$DEST/opening/"
 echo "Done."
